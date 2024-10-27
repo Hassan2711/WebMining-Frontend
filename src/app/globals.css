@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: rgb(238 242 255 / 0.7);
+}
+/* Table css */
+
+.table-container {
+  font-family: Arial, sans-serif;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.bulk-action,
+.apply-btn {
+  padding: 5px 10px;
+}
+
+.search-settings {
+  display: flex;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.business-info {
+  display: flex;
+  align-items: center;
+}
+
+.yp-logo {
+  background-color: #ff0;
+  color: #000;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.address {
+  color: #888;
+  font-size: 0.9em;
+}
+
+.status {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.9em;
+}
+
+.status.approved {
+  background-color: #e6f7ed;
+  color: #00a86b;
+}
+
+.status.pending {
+  background-color: #fff4e5;
+  color: #ffa500;
+}
+
+.status.rejected {
+  background-color: #ffebee;
+  color: #ff0000;
+}
+
+.checked-by {
+  display: flex;
+  align-items: center;
+}
+
+.initials {
+  background-color: #f0f0f0;
+  color: #666;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.more-options {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+/* Table css */
+
+/* Pagination Css */
+
+.pagination {
+  display: flex;
+  gap: 5px;
+}
+
+.page-item {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e7e5e4;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.page-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.page-item span {
+  font-size: 16px;
+  color: rgb(99 102 241);
+}
+
+.page-item:has(input[type="radio"]:checked) {
+  background-color: rgb(99 102 241);
+}
+
+.page-item:has(input[type="radio"]:checked) span {
+  color: white;
+  font-weight: bold;
+}
+
+/* Pagination Css */
+
+/* Table suspense animation */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s forwards; /* Adjust duration as needed */
+}
+
+/* Table suspense animation */
