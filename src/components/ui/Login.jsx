@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 // export const  BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export const BACKEND_URL =
-  "https://wholesome-happiness-development.up.railway.app";
+  "http://127.0.0.1:8000";
 
 export function Login() {
   const router = useRouter();

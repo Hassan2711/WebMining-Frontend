@@ -764,9 +764,8 @@
 // };
 
 // export default YellowTablePaginator;
-
-"use client";
-import React, { useState, useEffect } from "react";
+'use client';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -774,144 +773,43 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Paper,
-  IconButton,
-  Pagination,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import {
-  Modal,
-  ModalTrigger,
-  ModalBody,
-  ModalContent,
-  useModal,
-  ModalProvider,
-} from "@/components/ui/TableModal";
-import { BACKEND_URL, LabelInputContainer } from "@/components/ui/Login";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import Cookies from "js-cookie";
-import AnotherComponent from "./ApprovedButton";
-import ApprovedButton from "./ApprovedButton";
-import RejectButton from "./RejectButton";
-import { Toaster } from "react-hot-toast";
-import { fetchTableData } from "@/app/dashboard/yellowpages/page";
-import { useRouter } from "next/router";
-import BigModal from "./ui/BigModal";
+} from '@mui/material';
+import { BACKEND_URL } from '@/components/ui/Login';
+import { LabelInputContainer } from '@/components/ui/Login';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import BigModal from './ui/BigModal';
+import ApprovedButton from './ApprovedButton';
+import RejectButton from './RejectButton';
 
-export const submitData = async (
-  id,
-  editName,
-  address,
-  phone,
-  link,
-  email,
-  regular_hours,
-  claimed,
-  general_info,
-  services_products,
-  neighborhoods,
-  amenities,
-  languages,
-  aka,
-  categories,
-  other_info
-) => {
+export const submitData = async (id, fields) => {
   try {
-    let response = await fetch(`http://localhost:3000/scraper/yellowpages/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        name: editName,
-        address: address,
-        phone: phone,
-        link: link,
-        email: email,
-        regular_hours: regular_hours,
-        claimed: claimed,
-        general_info: general_info,
-        services_products: services_products,
-        neighborhoods: neighborhoods,
-        amenities: amenities,
-        languages: languages,
-        aka: aka,
-        social_links: "",
-        categories: categories,
-        other_info: other_info,
-        other_links: "",
-        status: "Approved",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await fetch(`${BACKEND_URL}/scraper/yellowpages/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...fields, status: 'Approved' }),
+      headers: { 'Content-Type': 'application/json' },
     });
-
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error:", errorData);
-      return;
-    } else {
-      const dateresponse = await response.json();
+      console.error('Error:', await response.json());
     }
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error('Fetch error:', error);
   }
 };
-export const submitRejectData = async (
-  id,
-  editName,
-  address,
-  phone,
-  link,
-  email,
-  regular_hours,
-  claimed,
-  general_info,
-  services_products,
-  neighborhoods,
-  amenities,
-  languages,
-  aka,
-  categories,
-  other_info
-) => {
-  try {
-    let response = await fetch(`http://localhost:3000/scraper/yellowpages/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        name: editName,
-        address: address,
-        phone: phone,
-        link: link,
-        email: email,
-        regular_hours: regular_hours,
-        claimed: claimed,
-        general_info: general_info,
-        services_products: services_products,
-        neighborhoods: neighborhoods,
-        amenities: amenities,
-        languages: languages,
-        aka: aka,
-        social_links: "",
-        categories: categories,
-        other_info: other_info,
-        other_links: "",
-        status: "Rejected",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
 
+export const submitRejectData = async (id, fields) => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/scraper/yellowpages/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ ...fields, status: 'Rejected' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error:", errorData);
-      return;
-    } else {
-      const dateresponse = await response.json();
+      console.error('Error:', await response.json());
     }
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error('Fetch error:', error);
   }
 };
 
@@ -926,178 +824,85 @@ const YellowTablePaginator = ({
 }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [visibleRows, setVisibleRows] = useState([]);
+  const [getUser, setGetUser] = useState('Jared');
 
-  const [editName, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [link, setLink] = useState("");
-  const [neighborhoods, setNeighborhoods] = useState("");
-  const [claimed, setClaimed] = useState("");
-  const [categories, setCategories] = useState("");
-  const [other_info, setOtherInfo] = useState("");
-  const [email, setEmail] = useState("");
-  const [regular_hours, setRegularHours] = useState("");
-  const [general_info, setGeneralInfo] = useState("");
-  const [services_products, setServicesProducts] = useState("");
-  const [amenities, setAmenities] = useState("");
-  const [languages, setLanguages] = useState("");
-  const [aka, setAka] = useState("");
+  const fields = [
+    'editName',
+    'phone',
+    'address',
+    'link',
+    'neighborhoods',
+    'claimed',
+    'categories',
+    'other_info',
+    'email',
+    'regular_hours',
+    'general_info',
+    'services_products',
+    'amenities',
+    'languages',
+    'aka',
+  ];
+  const stateHandlers = fields.reduce((acc, field) => {
+    acc[field] = useState('');
+    return acc;
+  }, {});
 
-  const deleteData = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/scraper/yellowpages/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return;
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('userName');
+      if (storedUser) setGetUser(storedUser);
     }
-  };
+  }, []);
 
   useEffect(() => {
     setVisibleRows([]);
-
     data?.forEach((_, index) => {
-      setTimeout(() => {
-        setVisibleRows((prev) => [...prev, index]);
-      }, index * 0);
+      setTimeout(() => setVisibleRows((prev) => [...prev, index]), index * 0);
     });
-
-    return () => {
-      setVisibleRows([]);
-    };
+    return () => setVisibleRows([]);
   }, [data]);
 
   useEffect(() => {
     if (selectedRow) {
-      setName(selectedRow.name || "");
-      setPhone(selectedRow.phone || "");
-      setAddress(selectedRow.address || "");
-      setLink(selectedRow.link || "");
-      setNeighborhoods(selectedRow.neighborhoods || "");
-      setClaimed(selectedRow.claimed || "");
-      setCategories(selectedRow.categories || "");
-      setOtherInfo(selectedRow.other_info || "");
-      setEmail(selectedRow.email || "");
-      setRegularHours(selectedRow.regular_hours || "");
-      setGeneralInfo(selectedRow.general_info || "");
-      setServicesProducts(selectedRow.services_products || "");
-      setAmenities(selectedRow.amenities || "");
-      setLanguages(selectedRow.languages || "");
-      setAka(selectedRow.aka || "");
+      fields.forEach((field) => {
+        stateHandlers[field][1](selectedRow[field] || '');
+      });
     }
   }, [selectedRow]);
 
-  const handleEditClick = (row) => {
-    setSelectedRow(row);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedRow(null);
-  };
-
-  const handleFieldChange = (setter) => (event) => {
-    setter(event.target.value);
-  };
-
-  const handleSaveChanges = () => {
-    if (selectedRow) {
-      const updatedRow = {
-        ...selectedRow,
-        name,
-        phone,
-        address,
-        link,
-        neighborhoods,
-        claimed,
-        categories,
-        other_info,
-        email,
-        regular_hours,
-        general_info,
-        services_products,
-        amenities,
-        languages,
-        aka,
-      };
-
-      onSaveChanges(updatedRow);
-      handleCloseModal();
-    }
-  };
+  const handleEditClick = (row) => setSelectedRow(row);
+  const handleCloseModal = () => setSelectedRow(null);
 
   const handleApprove = async () => {
     if (selectedRow) {
-      await submitData(
-        selectedRow.id,
-        editName,
-        address,
-        phone,
-        link,
-        email,
-        regular_hours,
-        claimed,
-        general_info,
-        services_products,
-        neighborhoods,
-        amenities,
-        languages,
-        aka,
-        categories,
-        other_info
+      const updatedFields = fields.reduce(
+        (acc, field) => ({ ...acc, [field]: stateHandlers[field][0] }),
+        {}
       );
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000); // 2000 milliseconds = 2 seconds
+      await submitData(selectedRow.id, updatedFields);
+      setTimeout(() => window.location.reload(), 2000);
     }
   };
 
   const handleReject = async () => {
     if (selectedRow) {
-      submitRejectData(
-        selectedRow.id,
-        editName,
-        address,
-        phone,
-        link,
-        email,
-        regular_hours,
-        claimed,
-        general_info,
-        services_products,
-        neighborhoods,
-        amenities,
-        languages,
-        aka,
-        categories,
-        other_info
+      const updatedFields = fields.reduce(
+        (acc, field) => ({ ...acc, [field]: stateHandlers[field][0] }),
+        {}
       );
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000); // 2000 milliseconds = 2 seconds
+      await submitRejectData(selectedRow.id, updatedFields);
+      setTimeout(() => window.location.reload(), 2000);
     }
   };
 
-  const getStatusText = (statusTag) => {
-    if (statusTag === "Approved" || statusTag === "Rejected") {
-      return statusTag;
-    }
-    return "N/A";
-  };
-
-  let getUser = localStorage.getItem("userName");
+  const getStatusText = (status) =>
+    status === 'Approved' || status === 'Rejected' ? status : 'N/A';
 
   if (!data || data.length === 0) {
     return (
-      <Paper className="p-4 text-center">
-        <h4 className="text-lg md:text-2xl text-neutral-600 dark:text-neutral-100 font-bold">
+      <Paper className='p-4 text-center'>
+        <h4 className='text-lg md:text-2xl text-neutral-600 dark:text-neutral-100 font-bold'>
           No data available
         </h4>
         <p>Please check back later</p>
@@ -1115,7 +920,7 @@ const YellowTablePaginator = ({
               <TableCell>Category</TableCell>
               <TableCell>Source</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell align="left">Checked By</TableCell>
+              <TableCell align='left'>Checked By</TableCell>
               <TableCell>Edit</TableCell>
             </TableRow>
           </TableHead>
@@ -1124,468 +929,60 @@ const YellowTablePaginator = ({
               visibleRows.includes(index) ? (
                 <TableRow key={row.id}>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.categories || "N/A"}</TableCell>
-                  <TableCell>{row.source || "N/A"}</TableCell>
+                  <TableCell>{row.categories || 'N/A'}</TableCell>
+                  <TableCell>{row.source || 'N/A'}</TableCell>
                   <TableCell>
-                    <div className="flex space-x-4 items-center">
-                      <p className="capitalize">{getStatusText(row.status)}</p>
+                    <div className='flex space-x-4 items-center'>
+                      <p className='capitalize'>{getStatusText(row.status)}</p>
                       <p>
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns='http://www.w3.org/2000/svg'
                           width={24}
                           height={24}
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          stroke='currentColor'
                           strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
                           className={`lucide lucide-circle-check ${
-                            row.status === "Rejected" && "bg-red-500"
-                          } ${row.status === "Approved" && "bg-green-500"} 
+                            row.status === 'Rejected' && 'bg-red-500'
+                          } ${row.status === 'Approved' && 'bg-green-500'} 
                           ${
-                            getStatusText(row.status) === "N/A" && "bg-gray-500"
+                            getStatusText(row.status) === 'N/A' && 'bg-gray-500'
                           } 
                           rounded-full text-white`}
                         >
                           <circle cx={12} cy={12} r={10} />
-                          <path d="m9 12 2 2 4-4" />
+                          <path d='m9 12 2 2 4-4' />
                         </svg>
                       </p>
                     </div>
                   </TableCell>
-                  <TableCell className="capitalize text-center font-semibold mx-auto">
-                    {getUser || "Jared"}
+                  <TableCell className='capitalize text-center font-semibold mx-auto'>
+                    {getUser}
                   </TableCell>
                   <TableCell>
-                    {/* <IconButton
-                      aria-label="edit"
-                      onClick={() => handleEditClick(row)}
-                    >
-<Modal>
-  <ModalTrigger>
-    <EditIcon />
-  </ModalTrigger>
-  <div className="">
-    <ModalBody className="" onClose={handleCloseModal}>
-      <ModalContent>
-        <h4 className="text-sm md:text-lg text-neutral-600 dark:text-neutral-100 font-bold text-center mb-1">
-          Edit Here
-        </h4>
-
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-1 ">
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="name" className="text-xs">Business Name</Label>
-            <Input
-              id="name"
-              value={editName}
-              onChange={handleFieldChange(setName)}
-              placeholder="Alpha LLC"
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="phone" className="text-xs">Phone Number</Label>
-            <Input
-              id="phone"
-              value={phone}
-              onChange={handleFieldChange(setPhone)}
-              placeholder="541-654-6168"
-              type="tel"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1 md:col-span-3">
-            <Label htmlFor="categories" className="text-xs">Category</Label>
-            <Input
-              id="categories"
-              value={categories}
-              onChange={handleFieldChange(setCategories)}
-              placeholder="Bed & Breakfast, Resorts, Guesthouses"
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-
-          <LabelInputContainer className="mb-1 md:col-span-2">
-            <Label htmlFor="address" className="text-xs">Address</Label>
-            <Input
-              id="address"
-              value={address}
-              onChange={handleFieldChange(setAddress)}
-              placeholder="123 Main St, London, UK"
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1 md:col-span-3">
-            <Label htmlFor="link" className="text-xs">Link</Label>
-            <Input
-              id="link"
-              value={link}
-              onChange={handleFieldChange(setLink)}
-              placeholder="https://www.alpha-llc.com"
-              type="url"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1 md:col-span-2">
-            <Label htmlFor="neighborhoods" className="text-xs">Neighborhoods</Label>
-            <Input
-              id="neighborhoods"
-              value={neighborhoods}
-              onChange={handleFieldChange(setNeighborhoods)}
-              placeholder="Additional details about the business"
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1 md:col-span-3">
-            <Label htmlFor="other_info" className="text-xs">Other Info</Label>
-            <Input
-              id="other_info"
-              value={other_info}
-              onChange={handleFieldChange(setOtherInfo)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-
-
-
-
-          <LabelInputContainer className="mb-1 md:col-span-5">
-            <Label htmlFor="general_info" className="text-xs">General Info</Label>
-            <Input
-              id="general_info"
-              value={general_info}
-              onChange={handleFieldChange(setGeneralInfo)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="email" className="text-xs">Email</Label>
-            <Input
-              id="email"
-              value={email}
-              onChange={handleFieldChange(setEmail)}
-              placeholder="example@example.com"
-              type="email"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="regular_hours" className="text-xs">Regular Hours</Label>
-            <Input
-              id="regular_hours"
-              value={regular_hours}
-              onChange={handleFieldChange(setRegularHours)}
-              placeholder="9 AM - 5 PM"
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="services_products" className="text-xs">Services Products</Label>
-            <Input
-              id="services_products"
-              value={services_products}
-              onChange={handleFieldChange(setServicesProducts)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="amenities" className="text-xs">Amenities</Label>
-            <Input
-              id="amenities"
-              value={amenities}
-              onChange={handleFieldChange(setAmenities)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="languages" className="text-xs">Languages</Label>
-            <Input
-              id="languages"
-              value={languages}
-              onChange={handleFieldChange(setLanguages)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="aka" className="text-xs">AKA</Label>
-            <Input
-              id="aka"
-              value={aka}
-              onChange={handleFieldChange(setAka)}
-              placeholder="A brief summary of the restaurant."
-              type="text"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-1">
-            <Label htmlFor="claimed" className="text-xs">Claimed</Label>
-            <Input
-              id="claimed"
-              value={claimed}
-              onChange={handleFieldChange(setClaimed)}
-              placeholder="041-564-5612"
-              type="tel"
-              className="text-xs"
-            />
-          </LabelInputContainer>
-        </div>
-
-        <div className="flex space-x-2 items-center justify-center">
-          <div onClick={handleReject}>
-            <RejectButton />
-          </div>
-          <div onClick={handleApprove}>
-            <ApprovedButton />
-          </div>
-        </div>
-      </ModalContent>
-    </ModalBody>
-  </div>
-</Modal>
-
-                    </IconButton> */}
                     <div onClick={() => handleEditClick(row)}>
                       <BigModal>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 p-4 ">
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="name" className="text-xs">
-                              Business Name
-                            </Label>
-                            <Input
-                              id="name"
-                              value={editName}
-                              onChange={handleFieldChange(setName)}
-                              placeholder="Alpha LLC"
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="phone" className="text-xs">
-                              Phone Number
-                            </Label>
-                            <Input
-                              id="phone"
-                              value={phone}
-                              onChange={handleFieldChange(setPhone)}
-                              placeholder="541-654-6168"
-                              type="tel"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="categories" className="text-xs">
-                              Category
-                            </Label>
-                            <Input
-                              id="categories"
-                              value={categories}
-                              onChange={handleFieldChange(setCategories)}
-                              placeholder="Bed & Breakfast, Resorts, Guesthouses"
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="address" className="text-xs">
-                              Address
-                            </Label>
-                            <Input
-                              id="address"
-                              value={address}
-                              onChange={handleFieldChange(setAddress)}
-                              placeholder="123 Main St, London, UK"
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="link" className="text-xs">
-                              Link
-                            </Label>
-                            <Input
-                              id="link"
-                              value={link}
-                              onChange={handleFieldChange(setLink)}
-                              placeholder="https://www.alpha-llc.com"
-                              type="url"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1 ">
-                            <Label htmlFor="neighborhoods" className="text-xs">
-                              Neighborhoods
-                            </Label>
-                            <Input
-                              id="neighborhoods"
-                              value={neighborhoods}
-                              onChange={handleFieldChange(setNeighborhoods)}
-                              placeholder="Additional details about the business"
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1 ">
-                            <Label htmlFor="other_info" className="text-xs">
-                              Other Info
-                            </Label>
-                            <Input
-                              id="other_info"
-                              value={other_info}
-                              onChange={handleFieldChange(setOtherInfo)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="email" className="text-xs">
-                              Email
-                            </Label>
-                            <Input
-                              id="email"
-                              value={email}
-                              onChange={handleFieldChange(setEmail)}
-                              placeholder="example@example.com"
-                              type="email"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="regular_hours" className="text-xs">
-                              Regular Hours
-                            </Label>
-                            <Input
-                              id="regular_hours"
-                              value={regular_hours}
-                              onChange={handleFieldChange(setRegularHours)}
-                              placeholder="9 AM - 5 PM"
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label
-                              htmlFor="services_products"
-                              className="text-xs"
-                            >
-                              Services Products
-                            </Label>
-                            <Input
-                              id="services_products"
-                              value={services_products}
-                              onChange={handleFieldChange(setServicesProducts)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="amenities" className="text-xs">
-                              Amenities
-                            </Label>
-                            <Input
-                              id="amenities"
-                              value={amenities}
-                              onChange={handleFieldChange(setAmenities)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="languages" className="text-xs">
-                              Languages
-                            </Label>
-                            <Input
-                              id="languages"
-                              value={languages}
-                              onChange={handleFieldChange(setLanguages)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="aka" className="text-xs">
-                              AKA
-                            </Label>
-                            <Input
-                              id="aka"
-                              value={aka}
-                              onChange={handleFieldChange(setAka)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-                          <LabelInputContainer className="mb-1">
-                            <Label htmlFor="claimed" className="text-xs">
-                              Claimed
-                            </Label>
-                            <Input
-                              id="claimed"
-                              value={claimed}
-                              onChange={handleFieldChange(setClaimed)}
-                              placeholder="041-564-5612"
-                              type="tel"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
-                          <LabelInputContainer className="mb-1 md:col-span-2">
-                            <Label htmlFor="general_info" className="text-xs">
-                              General Info
-                            </Label>
-                            <Input
-                              id="general_info"
-                              value={general_info}
-                              onChange={handleFieldChange(setGeneralInfo)}
-                              placeholder="A brief summary of the restaurant."
-                              type="text"
-                              className="text-xs"
-                            />
-                          </LabelInputContainer>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-1 p-4 '>
+                          {fields.map((field) => (
+                            <LabelInputContainer key={field} className='mb-1'>
+                              <Label htmlFor={field} className='text-xs'>
+                                {field.replace('_', ' ')}
+                              </Label>
+                              <Input
+                                id={field}
+                                value={stateHandlers[field][0]}
+                                onChange={(e) =>
+                                  stateHandlers[field][1](e.target.value)
+                                }
+                                placeholder={`Enter ${field}`}
+                                type='text'
+                                className='text-xs'
+                              />
+                            </LabelInputContainer>
+                          ))}
                         </div>
                       </BigModal>
                     </div>
@@ -1596,15 +993,6 @@ const YellowTablePaginator = ({
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <TablePagination
-        rowsPerPageOptions={[10, 25, 50, 250, 500, 1000]}
-        component="div"
-        count={totalCount}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
-      /> */}
     </Paper>
   );
 };
