@@ -121,7 +121,7 @@ export default function SettingsModal() {
         state: selectedState,
         category: primaryCategory,
       });
-
+  
       if (response.status === 200) {
         console.log("API request successful:", response.data);
         handleClose();
@@ -133,6 +133,7 @@ export default function SettingsModal() {
     }
     setOpen(false);
   };
+  
 
   return (
     <div>
