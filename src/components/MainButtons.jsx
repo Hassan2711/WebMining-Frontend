@@ -161,12 +161,12 @@ const MainButtons = ({ scriptName }) => {
             <p className='capitalize'>{scriptStatus}</p>
             <div
               className={`${
-                btnStatus === false ? 'bg-red-500' : 'bg-emerald-500'
+                btnStatus === false ? 'bg-emerald-500' : 'bg-red-500'
               } w-5 h-5 rounded-full flex items-center justify-center ml-2 mt-1`}
             >
               <p
                 className={`${
-                  btnStatus === false ? 'bg-red-500' : 'bg-emerald-500'
+                  btnStatus === false ? 'bg-emerald-500' : 'bg-red-500'
                 } w-5 h-5 rounded-full animate-ping`}
               ></p>
             </div>
