@@ -39,7 +39,7 @@ const DataTable = () => {
   const fetchData = async (page, limit) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/scraper/yellowpages/paginate?page=${
+        `${ BACKEND_URL }/scraper/yellowpages/paginate?page=${
           page + 1
         }&limit=${limit}`,
         {

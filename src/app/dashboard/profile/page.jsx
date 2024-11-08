@@ -128,7 +128,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-// import { BACKEND_URL } from "@/components/ui/Login";
+import { BACKEND_URL } from "@/components/ui/Login";
 import Cookies from "js-cookie";
 import PageTitle from "@/components/PageTitle";
 
@@ -142,13 +142,13 @@ export default function Page() {
     try {
       const token = Cookies.get("token");
   
-      // const response = await fetch(`${BACKEND_URL}/users/me/`, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded",
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
+      const response = await fetch(`${BACKEND_URL}/users/me/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        },
+      });
  
 
       if (!response.ok) {

@@ -835,6 +835,7 @@ const YellowTablePaginator = ({
     'claimed',
     'categories',
     'other_info',
+    'other_links',
     'email',
     'regular_hours',
     'general_info',
@@ -842,6 +843,8 @@ const YellowTablePaginator = ({
     'amenities',
     'languages',
     'aka',
+    'social_links',
+    'photos_url',
   ];
   const stateHandlers = fields.reduce((acc, field) => {
     acc[field] = useState('');
@@ -862,6 +865,7 @@ const YellowTablePaginator = ({
     });
     return () => setVisibleRows([]);
   }, [data]);
+  console.log(data);
 
   useEffect(() => {
     if (selectedRow) {

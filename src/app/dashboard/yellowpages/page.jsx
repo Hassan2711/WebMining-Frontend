@@ -325,7 +325,7 @@
 import React, { useEffect, useState } from "react";
 import MainButtons from "@/components/MainButtons";
 import PageTitle from "@/components/PageTitle";
-// import { BACKEND_URL } from "@/components/ui/Login";
+import { BACKEND_URL } from "@/components/ui/Login";
 import YellowTablePaginator from "@/components/YellowTablePaginator";
 import Loader from "@/components/ui/Loader";
 import CustomPagination from "@/components/ui/CustomPagination";
@@ -334,15 +334,16 @@ import { Toaster } from "react-hot-toast";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import Dropdown from "@/components/ui/DropDown";
 
-// Updated fetchTableData function to include filter parameter
 const fetchTableData = async (page = 1, limit = 10, filter = "null") => {
-  const response = await fetch(
-    `http://127.0.0.1:8000/scraper/yellowpages/paginate?page=${page}&limit=${limit}&filterBy=${filter}`
-  );
+  const filterParam = filter === "null" ? "" : `&filterBy=${filter}`;
+  const url = `${BACKEND_URL}/scraper/yellowpages/paginate?page=${page}&limit=${limit}${filterParam}`;
+  console.log("Fetching URL:", url); // Log URL
+  const response = await fetch(url);
   const data = await response.json();
-  console.log("dataaa:", data);
+  console.log("Fetched data:", data); // Log data
   return data;
 };
+
 
 export default function Page() {
   const [data, setData] = useState([]);
@@ -379,10 +380,12 @@ export default function Page() {
   };
 
   const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-    setPage(0); // Reset to first page when filter changes
+    const value = event.target.value;
+    console.log("Selected filter:", value); // Debugging line
+    setFilter(value === "null" ? "null" : value);
+    setPage(0);
   };
-
+  
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   return (

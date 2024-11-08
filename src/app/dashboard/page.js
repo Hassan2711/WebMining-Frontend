@@ -18,27 +18,25 @@ function Page() {
           {/* <UserTableStats /> */}
           {/* <TableStats /> */}
           {/* <MainStats/> */}
- 
 
           {/* <BasicPi /> */}
-          <p className="lg:w-2/5   m-0 p-2    bg-white  border rounded-md">
+          <div className="lg:w-2/5 m-0 p-2 bg-white border rounded-md">
             <SameDataComposed />
-          </p>
-          <p className="lg:w-3/5   m-0 p-2   bg-white  border rounded-md">
-           <PieActiveArc/>
-          </p>
-          {/* <p className="w-full  m-0    bg-white  border rounded-md ">
+          </div>
+          <div className="lg:w-3/5 m-0 p-2 bg-white border rounded-md">
+            <PieActiveArc />
+          </div>
+          {/* <div className="w-full m-0 bg-white border rounded-md">
             <CustomLineChart />
-          </p>
-          <p className="w-full  m-0    bg-white  border rounded-md">
+          </div>
+          <div className="w-full m-0 bg-white border rounded-md">
             <BrushBarChart /> */}
-          {/* </p> */}
+          {/* </div> */}
         </div>
-        <div className=" flex flex-col sm:flex-row sm:flex-wrap justify-center items-center  space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <MainStats />
         </div>
       </div>
- 
     </div>
   );
 }

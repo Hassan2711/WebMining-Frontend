@@ -2,7 +2,7 @@
 import MainButtons from "@/components/MainButtons";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
-// import { BACKEND_URL } from "@/components/ui/Login";
+import { BACKEND_URL } from "@/components/ui/Login";
 import ArticleTablePaginator from "@/components/ArticlePaginationTable";
 import CustomPagination from "@/components/ui/CustomPagination";
 import { ModalProvider } from "@/components/ui/TableModal";
@@ -10,7 +10,7 @@ import Dropdown from "@/components/ui/DropDown";
 
 const fetchTableData = async (page = 1, limit = 10, filter = "null") => {
   const response = await fetch(
-    // `${BACKEND_URL}/scraper/article_factory/paginate?page=${page}&limit=${limit}&filterBy=${filter}`
+    `${BACKEND_URL}/scraper/article_factory/paginate?page=${page}&limit=${limit}&filterBy=${filter}`
   );
   const data = await response.json();
   console.log("dataaa:", data);
@@ -37,7 +37,7 @@ export default function Page() {
   async function fetchData() {
     try {
       const response = await fetch(
-        `http://localhost:3000/scraper/yellowpages/paginate?page=1&limit=10`,
+        `${BACKEND_URL}/scraper/yellowpages/paginate?page=1&limit=10`,
         {
           method: "GET",
           headers: {
