@@ -85,7 +85,7 @@ const MainButtons = ({ scriptName }) => {
 
   async function handleStart() {
     await axios.get(
-      `http://127.0.0.1:8000/scraper/${scriptName}/start`,
+      `${ BACKEND_URL }/scraper/${scriptName}/start`,
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
     setStatus(true);
