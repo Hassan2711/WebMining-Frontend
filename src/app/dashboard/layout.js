@@ -14,23 +14,23 @@ export default function RootLayout({ children }) {
 
   const [accessToken,setAccessToken] = useState(null)
 
-  // useEffect(() => {
-  //   const token = Cookies.get("token");
+  useEffect(() => {
+    const token = Cookies.get("token");
 
-  //   if (!token) {
-  //     router.push("/login");
-  //     // Redirect to login if no token is found
+    if (!token) {
+      router.push("/login");
+      // Redirect to login if no token is found
       
-  //   } else {
-  //     setAccessToken(token)
+    } else {
+      setAccessToken(token)
    
-  //   }
-  // }, [router]); // Add router as dependency
+    }
+  }, [router]); // Add router as dependency
 
-  // if (!accessToken){
-  //   return <Loader/>
+  if (!accessToken){
+    return <Loader/>
     
-  // }
+  }
 
   return (
     <>

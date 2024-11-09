@@ -13,15 +13,15 @@ export default function Home() {
 
   useEffect(() => {
     const token = Cookies.get("token");
-    router.push("/dashboard");
+    // router.push("/dashboard");
 
 
-    // if (!token) {
-    //   router.push("/login");
-    // } else {
+    if (!token) {
+      router.push("/login");
+    } else {
       router.push("/dashboard");
 
-    // }
+    }
   }
   , [router]);
 

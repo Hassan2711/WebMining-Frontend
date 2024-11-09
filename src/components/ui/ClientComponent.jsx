@@ -9,15 +9,15 @@ export default function ClientComponent({ children }) {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState(null);
 
-  // useEffect(() => {
-  //   const token = Cookies.get("token");
+  useEffect(() => {
+    const token = Cookies.get("token");
 
-  //   if (!token) {
-  //     router.push("/login");
-  //   } else {
-  //     setAccessToken(token); // Adjust this as needed
-  //   }
-  // }, [router]);
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAccessToken(token); // Adjust this as needed
+    }
+  }, [router]);
 
   // if (!accessToken) {
   //   console.log("no token access")

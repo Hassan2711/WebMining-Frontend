@@ -31,49 +31,74 @@ export function Login() {
   //   console.log("Form submitted", e.target.value);
   // };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     // Construct the data payload for the POST request
+  //     const data = new URLSearchParams();
+  //     data.append("username", email); // Assuming 'username' is the expected field name
+  //     data.append("password", password);
+
+  //     // Make the POST request to the FastAPI backend
+  //     const response = await axios.post(`${BACKEND_URL}/token`, data, {
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //     });
+  //     // const getDetail = await axios.get(`${BACKEND_URL}/get_user_detail`, {
+  //     //   headers: {
+  //     //     'Authorization': `Bearer ${response.data.access_token}`, // Assuming the token needs to be passed here
+  //     //   }
+  //     // });
+  //     // console.log("user detail", getDetail.data);
+  //     // Handle successful authentication here
+  //     // go to /dashboard page
+  //     const thirtyMinutesFromNow = new Date(
+  //       new Date().getTime() + 30 * 60 * 1000
+  //     );
+
+  //     const oneMinuteFromNow = new Date(new Date().getTime() + 1 * 60 * 1000);
+
+  //     Cookies.set("token", response.data.access_token, {
+  //       expires: 2,
+  //       path: "/",
+  //     });
+
+  //     router.push("/dashboard");
+  //     // Redirect to another page or update the UI based on the response
+  //   } catch (error) {
+  //     // Handle errors here
+  //     //
+  //     console.error(error.response?.data || error.message);
+  //     setError(true);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      // Construct the data payload for the POST request
-      const data = new URLSearchParams();
-      data.append("username", email); // Assuming 'username' is the expected field name
-      data.append("password", password);
-
-      // Make the POST request to the FastAPI backend
-      const response = await axios.post(`${BACKEND_URL}/token`, data, {
+      const response = await axios.post(`${BACKEND_URL}/token`, {
+        username: email,
+        password: password
+      }, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
       });
-      // const getDetail = await axios.get(`${BACKEND_URL}/get_user_detail`, {
-      //   headers: {
-      //     'Authorization': `Bearer ${response.data.access_token}`, // Assuming the token needs to be passed here
-      //   }
-      // });
-      // console.log("user detail", getDetail.data);
-      // Handle successful authentication here
-      // go to /dashboard page
-      const thirtyMinutesFromNow = new Date(
-        new Date().getTime() + 30 * 60 * 1000
-      );
-
-      const oneMinuteFromNow = new Date(new Date().getTime() + 1 * 60 * 1000);
-
+  
       Cookies.set("token", response.data.access_token, {
         expires: 2,
         path: "/",
       });
-
+  
       router.push("/dashboard");
-      // Redirect to another page or update the UI based on the response
     } catch (error) {
-      // Handle errors here
-      //
       console.error(error.response?.data || error.message);
       setError(true);
     }
   };
+  
 
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-// import { BACKEND_URL } from "./ui/Login";
+import { BACKEND_URL } from "./ui/Login";
 import Cookies from "js-cookie";
 import {
   Modal,
@@ -21,39 +21,39 @@ export default function CreateNewUser() {
 
   const token = Cookies.get("token");
 
-  // const submitData = async () => {
-  //   try {
-  //     let response = await fetch(`${BACKEND_URL}/create_user/`, {
-  //       method: "POST",
-  //       body: JSON.stringify({
-  //         name: username,
-  //         password: password,
-  //         role: role,
-  //       }),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`, // Add Bearer token to the headers
-  //       },
-  //     });
+  const submitData = async () => {
+    try {
+      let response = await fetch(`${BACKEND_URL}/create_user/`, {
+        method: "POST",
+        body: JSON.stringify({
+          username: username,
+          password: password,
+          role: role,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add Bearer token to the headers
+        },
+      });
 
-  //     if (!response.ok) {
-  //       // Handle non-2xx responses
-  //       const errorData = await response.json();
-  //       console.error("Error:", errorData);
-  //       // alert(`Error: ${errorData.message || "An error occurred"}`);
-  //       return;
-  //     }
+      if (!response.ok) {
+        // Handle non-2xx responses
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+        // alert(`Error: ${errorData.message || "An error occurred"}`);
+        return;
+      }
 
-  //     const data = await response.json();
-  //     router.push('/dashboard/admin_settings')
-  //     window.location.reload();
-  //   //   alert("User created successfully!");
+      const data = await response.json();
+      router.push('/dashboard/admin_settings')
+      window.location.reload();
+    //   alert("User created successfully!");
      
-  //   } catch (error) {
-  //     console.error("Fetch error:", error);
-  //   //   alert("An unexpected error occurred.");
-  //   }
-  // };
+    } catch (error) {
+      console.error("Fetch error:", error);
+    //   alert("An unexpected error occurred.");
+    }
+  };
 
   return (
     <button className="">
