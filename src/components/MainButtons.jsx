@@ -33,6 +33,23 @@ const MainButtons = ({ scriptName }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const timeoutRef = useRef(null);
   const [scriptStatus, setScriptStatus] = useState('Not Started');
+  const [estimatedTime, setEstimatedTime] = useState(null);
+
+  useEffect(() => {
+    let timerInterval;
+    if (btnStatus && estimatedTime) {
+      timerInterval = setInterval(() => {
+        setEstimatedTime(prevTime => {
+          if (prevTime <= 5) {
+            clearInterval(timerInterval);
+            return 0;
+          }
+          return prevTime - 5;
+        });
+      }, 5 * 60 * 1000);
+    }
+    return () => clearInterval(timerInterval);
+  }, [btnStatus, estimatedTime]);
 
   function ChangeButtonStatus() {
     fetch(`${BACKEND_URL}/scraper/${scriptName}/start`)
@@ -89,6 +106,7 @@ const MainButtons = ({ scriptName }) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
     setStatus(true);
+    setEstimatedTime(90);
     localStorage.setItem(scriptName, true);
   }
 
@@ -122,6 +140,13 @@ const MainButtons = ({ scriptName }) => {
       setIsModalOpen(false);
     }, 60000);
   }
+
+  const formatTime = (minutes) => {
+    if (!minutes) return '';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours ? `${hours} h` : ''} ${mins ? `${mins} min` : ''}`.trim();
+  };
 
   return (
     <div className='flex justify-between items-center py-2 md:py-6 md:px-6'>
@@ -157,6 +182,7 @@ const MainButtons = ({ scriptName }) => {
       <div className='flex justify-center items-center space-x-8'>
         <div>
           <p className='font-semibold text-sm'>Status:</p>
+          
           <div className='flex items-center justify-center md:py-2'>
             <p className='capitalize'>{scriptStatus}</p>
             <div
@@ -171,6 +197,11 @@ const MainButtons = ({ scriptName }) => {
               ></p>
             </div>
           </div>
+          {btnStatus && estimatedTime > 0 && (
+            <p className="text-sm font-medium">
+              Estimated Time: {formatTime(estimatedTime)}
+            </p>
+          )}
         </div>
       </div>
     </div>
