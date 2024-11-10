@@ -179,11 +179,11 @@ const MainButtons = ({ scriptName }) => {
         </div>
       </div>
 
-      <div className='flex justify-center items-center space-x-8'>
+      <div className='flex  space-x-8'>
         <div>
           <p className='font-semibold text-sm'>Status:</p>
           
-          <div className='flex items-center justify-center md:py-2'>
+          <div className='flex md:py-2'>
             <p className='capitalize'>{scriptStatus}</p>
             <div
               className={`${
