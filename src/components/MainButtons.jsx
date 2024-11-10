@@ -68,9 +68,9 @@ const MainButtons = ({ scriptName }) => {
             clearInterval(timerInterval);
             return 0;
           }
-          return prevTime - 5;
+          return prevTime - 1;
         });
-      }, 5 * 60 * 1000);
+      }, 60 * 1000);
     }
     return () => clearInterval(timerInterval);
   }, [btnStatus, estimatedTime]);
@@ -132,9 +132,15 @@ const MainButtons = ({ scriptName }) => {
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
 
-      // Update local state
+      // Update local state with different times based on scriptName
       setStatus(true);
-      setEstimatedTime(90);
+      const estimatedTimes = {
+        yellowpages: 90,
+        procurement: 10,
+        grant_gov: 1,
+        Article: 1
+      };
+      setEstimatedTime(estimatedTimes[scriptName] || 90); // Default to 90 if scriptName not found
       localStorage.setItem(scriptName, true);
 
       // Get user data
