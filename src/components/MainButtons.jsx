@@ -139,8 +139,8 @@ const MainButtons = ({ scriptName }) => {
       const estimatedTimes = {
         yellowpages: 90,
         procurement: 10,
-        grant_gov: 1,
-        Article: 1
+        grants_gov: 1,
+        article_factory: 1
       };
       setEstimatedTime(estimatedTimes[scriptName] || 90); // Default to 90 if scriptName not found
       localStorage.setItem(scriptName, true);
