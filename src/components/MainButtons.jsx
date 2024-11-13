@@ -7,13 +7,15 @@ import {
 } from 'lucide-react';
 import { MultiStepLoader as Loader } from '@/components/ui/MultiStepLoader';
 import { IconSquareRoundedX } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Modal,
   ModalTrigger,
   ModalBody,
 } from '@/components/ui/MainButtonTrigger';
 import { BACKEND_URL } from './ui/Login';
+import Cookies from "js-cookie";
+
 import axios from 'axios';
 import SettingsModal from './ui/SettingsModal';
 import { useRouter } from 'next/navigation';
