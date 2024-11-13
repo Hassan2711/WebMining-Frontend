@@ -34,7 +34,31 @@ const MainButtons = ({ scriptName }) => {
   const timeoutRef = useRef(null);
   const [scriptStatus, setScriptStatus] = useState('Not Started');
   const [estimatedTime, setEstimatedTime] = useState(null);
+ 
+  const fetchUserData = useCallback(async () => {
+    try {
+      const token = Cookies.get("token");
+  
+      const response = await fetch(`${BACKEND_URL}/users/me/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+ 
 
+      if (!response.ok) {
+      console.log("RESPONSE", response);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+     
+      return { error: error.message };
+    }
+  }, []);
   useEffect(() => {
     let timerInterval;
     if (btnStatus && estimatedTime) {
@@ -101,13 +125,44 @@ const MainButtons = ({ scriptName }) => {
   }
 
   async function handleStart() {
-    await axios.get(
-      `${ BACKEND_URL }/scraper/${scriptName}/start`,
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
-    setStatus(true);
-    setEstimatedTime(90);
-    localStorage.setItem(scriptName, true);
+    try {
+      // Start the scraper
+      await axios.get(
+        `${BACKEND_URL}/scraper/${scriptName}/start`,
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      );
+
+      // Update local state
+      setStatus(true);
+      setEstimatedTime(90);
+      localStorage.setItem(scriptName, true);
+
+      // Get user data
+      const userData = await fetchUserData();
+      if (userData.error) {
+        console.error('Error fetching user data:', userData.error);
+        return;
+      }
+
+     
+      await axios.put(
+        `${BACKEND_URL}/checkedby/start`,
+        null,  
+        { 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get("token")}`
+          },
+          params: {
+            field: scriptName,
+            username: userData.name 
+          }
+        }
+      );
+
+    } catch (error) {
+      console.error('Error in handleStart:', error);
+    }
   }
 
   function exportScraper() {
