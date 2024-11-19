@@ -137,7 +137,7 @@ const MainButtons = ({ scriptName }) => {
       // Update local state with different times based on scriptName
       setStatus(true);
       const estimatedTimes = {
-        yellowpages: 90,
+        yellowpages: 180,
         procurement: 10,
         grants_gov: 1,
         article_factory: 1
