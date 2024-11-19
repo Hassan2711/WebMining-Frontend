@@ -19,7 +19,6 @@ import Cookies from "js-cookie";
 import axios from 'axios';
 import SettingsModal from './ui/SettingsModal';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 
 const MainButtons = ({ scriptName }) => {
   const loadingStates = [

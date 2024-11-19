@@ -1,6 +1,8 @@
+"use client";
 import PageTitle from "@/components/PageTitle";
 import React, { useEffect, useState } from "react";
-import { BACKEND_URL } from './ui/Login';
+import { BACKEND_URL } from "@/components/ui/Login";
+
 const Page = () => {
   const [downloadHistory, setDownloadHistory] = useState(null);
 
@@ -28,7 +30,7 @@ const Page = () => {
         </h4>
         <div className="space-y-1">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Checked By: {checkedBy || 'N/A'}
+            Downloaded By: {checkedBy || 'N/A'}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Export Time: {time || 'N/A'}
