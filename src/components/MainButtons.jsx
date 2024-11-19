@@ -19,6 +19,7 @@ import Cookies from "js-cookie";
 import axios from 'axios';
 import SettingsModal from './ui/SettingsModal';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const MainButtons = ({ scriptName }) => {
   const loadingStates = [
@@ -188,6 +189,15 @@ const MainButtons = ({ scriptName }) => {
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
+
+        
+        return fetch(`${BACKEND_URL}/download/start?field=${scriptName}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get("token")}`
+          }
+        });
       })
       .catch((error) => console.error('Error exporting scraper data:', error));
   }
