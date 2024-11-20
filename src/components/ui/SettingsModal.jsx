@@ -7,6 +7,8 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { Settings } from "lucide-react";
 import { TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { BACKEND_URL } from "@/components/ui/Login";
+
 
 const style = {
   position: "absolute",
@@ -117,7 +119,7 @@ export default function SettingsModal() {
 
   const handleSave = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/scraper/yellowpages/start", {
+      const response = await axios.post(`${ BACKEND_URL }/scraper/yellowpages/start`, {
         state: selectedState,
         category: primaryCategory,
       });

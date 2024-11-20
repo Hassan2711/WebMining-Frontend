@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import RejectButton from "./RejectButton";
 import ApprovedButton from "./ApprovedButton";
 import BigModal from "./ui/BigModal";
+import { BACKEND_URL } from "@/components/ui/Login";
+
 
 const GrantsgovTablePaginator = ({
   data,
@@ -50,7 +52,7 @@ const GrantsgovTablePaginator = ({
 
   const submitData = async (id) => {
     try {
-      let response = await fetch(`http://127.0.0.1:8000/scraper/grants_gov/${id}`, {
+      let response = await fetch(`${ BACKEND_URL }/scraper/grants_gov/${id}`, {
         method: "PUT",
         body: JSON.stringify({
           "Opportunity Number": opportunityNumber,
@@ -79,7 +81,7 @@ const GrantsgovTablePaginator = ({
   };
   const submitRejectData = async (id) => {
     try {
-      let response = await fetch(`http://127.0.0.1:8000/scraper/grants_gov/${id}`, {
+      let response = await fetch(` ${ BACKEND_URL }/scraper/grants_gov/${id}`, {
         method: "PUT",
         body: JSON.stringify({
           "Opportunity Number": opportunityNumber,
@@ -116,7 +118,7 @@ const GrantsgovTablePaginator = ({
 
   const deleteData = async (id) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/scraper/grants_gov/${id}`, {
+      const response = await fetch(` ${ BACKEND_URL }/scraper/grants_gov/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

@@ -21,7 +21,8 @@ import {
 import { LabelInputContainer } from "@/components/ui/Login";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { BACKEND_URL } from './ui/Login';
+import { BACKEND_URL } from "@/components/ui/Login";
+
 
 import RejectButton from "./RejectButton";
 import ApprovedButton from "./ApprovedButton";
