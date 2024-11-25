@@ -1,4 +1,5 @@
 'use client';
+
 import {
   FolderDown,
   Pause,
@@ -15,12 +16,19 @@ import {
 } from '@/components/ui/MainButtonTrigger';
 import { BACKEND_URL } from './ui/Login';
 import Cookies from "js-cookie";
-
 import axios from 'axios';
 import SettingsModal from './ui/SettingsModal';
 import { useRouter } from 'next/navigation';
 
 const MainButtons = ({ scriptName }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [btnStatus, setStatus] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [scriptStatus, setScriptStatus] = useState('Not Started');
+  const [estimatedTime, setEstimatedTime] = useState(null);
+  const timeoutRef = useRef(null);
+
   const loadingStates = [
     { text: 'Server is Up' },
     { text: 'Mining is Started' },
@@ -29,18 +37,10 @@ const MainButtons = ({ scriptName }) => {
     { text: '93% is Approved' },
   ];
 
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [btnStatus, setStatus] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(true);
-  const timeoutRef = useRef(null);
-  const [scriptStatus, setScriptStatus] = useState('Not Started');
-  const [estimatedTime, setEstimatedTime] = useState(null);
- 
+  // Fetch user data
   const fetchUserData = useCallback(async () => {
     try {
       const token = Cookies.get("token");
-  
       const response = await fetch(`${BACKEND_URL}/users/me/`, {
         method: "GET",
         headers: {
@@ -48,68 +48,19 @@ const MainButtons = ({ scriptName }) => {
           Authorization: `Bearer ${token}`,
         },
       });
- 
 
       if (!response.ok) {
-      console.log("RESPONSE", response);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
       return await response.json();
     } catch (error) {
-     
-      return { error: error.message };
+      console.error("Error fetching user data:", error.message);
+      return null;
     }
   }, []);
-  useEffect(() => {
-    let timerInterval;
-    if (btnStatus && estimatedTime) {
-      timerInterval = setInterval(() => {
-        setEstimatedTime(prevTime => {
-          if (prevTime <= 5) {
-            clearInterval(timerInterval);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 60 * 1000);
-    }
-    return () => clearInterval(timerInterval);
-  }, [btnStatus, estimatedTime]);
 
-  function ChangeButtonStatus() {
-    fetch(`${BACKEND_URL}/scraper/${scriptName}/start`)
-      .then((response) => response.json())
-      .catch((error) => console.error("Error starting script:", error));
-    setStatus((prevStatus) => !prevStatus);
-    if (!btnStatus) {
-      setLoading(true);
-      setIsModalOpen(true);
-    } else {
-      setLoading(false);
-      setIsModalOpen(false);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    }
-  }
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedValue = localStorage.getItem(scriptName);
-      if (storedValue) setStatus(true);
-    }
-  }, [scriptName]);
-
-  useEffect(() => {
-    let intervalId;
-    if (btnStatus === true) {
-      getCurrentStatus();
-      intervalId = setInterval(getCurrentStatus, 10000);
-    } else if (intervalId) clearInterval(intervalId);
-
-    return () => clearInterval(intervalId);
-  }, [btnStatus]);
-
-  async function getCurrentStatus() {
+  // Get current status
+  const getCurrentStatus = useCallback(async () => {
     try {
       const response = await axios.get(
         `${BACKEND_URL}/scraper/${scriptName}/status`,
@@ -124,55 +75,66 @@ const MainButtons = ({ scriptName }) => {
     } catch (error) {
       console.error('Error fetching status:', error);
     }
-  }
+  }, [scriptName]);
 
+  // Timer for estimated time
+  useEffect(() => {
+    let timerInterval;
+    if (btnStatus && estimatedTime) {
+      timerInterval = setInterval(() => {
+        setEstimatedTime((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerInterval);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 60000);
+    }
+    return () => clearInterval(timerInterval);
+  }, [btnStatus, estimatedTime]);
+
+  // Handle start button logic
   async function handleStart() {
     try {
-      // Start the scraper
-      await axios.get(
-        `${BACKEND_URL}/scraper/${scriptName}/start`,
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-      );
+      await axios.get(`${BACKEND_URL}/scraper/${scriptName}/start`, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
 
-      // Update local state with different times based on scriptName
       setStatus(true);
+
       const estimatedTimes = {
         yellowpages: 180,
         procurement: 10,
         grants_gov: 1,
-        article_factory: 1
+        article_factory: 1,
       };
-      setEstimatedTime(estimatedTimes[scriptName] || 90); // Default to 90 if scriptName not found
+      setEstimatedTime(estimatedTimes[scriptName] || 90);
       localStorage.setItem(scriptName, true);
 
-      // Get user data
       const userData = await fetchUserData();
-      if (userData.error) {
-        console.error('Error fetching user data:', userData.error);
-        return;
-      }
+      if (!userData) return;
 
-     
       await axios.put(
         `${BACKEND_URL}/checkedby/start`,
-        null,  
-        { 
-          headers: { 
+        null,
+        {
+          headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get("token")}`
+            Authorization: `Bearer ${Cookies.get("token")}`,
           },
           params: {
             field: scriptName,
-            username: userData.name 
-          }
+            username: userData.name,
+          },
         }
       );
-
     } catch (error) {
       console.error('Error in handleStart:', error);
     }
   }
 
+  // Export scraper data
   function exportScraper() {
     fetch(`${BACKEND_URL}/scraper/${scriptName}/download`, {
       method: 'GET',
@@ -189,13 +151,12 @@ const MainButtons = ({ scriptName }) => {
         a.remove();
         window.URL.revokeObjectURL(url);
 
-        
         return fetch(`${BACKEND_URL}/download/start?field=${scriptName}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Cookies.get("token")}`
-          }
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
         });
       })
       .catch((error) => console.error('Error exporting scraper data:', error));
@@ -204,14 +165,6 @@ const MainButtons = ({ scriptName }) => {
   const handleClick = () => {
     router.push(`/dashboard/transfer/${scriptName}`);
   };
-
-  function handleLoadingComplete() {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setStatus(false);
-      setIsModalOpen(false);
-    }, 60000);
-  }
 
   const formatTime = (minutes) => {
     if (!minutes) return '';
@@ -251,10 +204,9 @@ const MainButtons = ({ scriptName }) => {
         </div>
       </div>
 
-      <div className='flex  space-x-8'>
+      <div className='flex space-x-8'>
         <div>
           <p className='font-semibold text-sm'>Status:</p>
-          
           <div className='flex md:py-2'>
             <p className='capitalize'>{scriptStatus}</p>
             <div
