@@ -90,12 +90,12 @@ const YellowTablePaginator = ({
   useEffect(() => {
     const fetchCheckedByData = async () => {
       try {
-        const response = await fetch(`https://mining-production.up.railway.app/checkedby`);
+        const response = await fetch(`${BACKEND_URL}/checkedby`);
         if (!response.ok) {
           throw new Error('Failed to fetch checked by data');
         }
         const data = await response.json();
-        console.log('checkedby data:', data);
+        console.log(data);
 
         setCheckedByUser(data.yellowpages || 'N/A');
       } catch (error) {
