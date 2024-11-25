@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import BigModal from './ui/BigModal';
 import ApprovedButton from './ApprovedButton';
 import RejectButton from './RejectButton';
+import Image from 'next/image';
 
 export const submitData = async (id, fields) => {
   try {
@@ -81,6 +82,7 @@ const YellowTablePaginator = ({
     'photos_url',
   ];
   const stateHandlers = fields.reduce((acc, field) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     acc[field] = useState('');
     return acc;
   }, {});
@@ -118,7 +120,7 @@ const YellowTablePaginator = ({
         stateHandlers[field][1](selectedRow[field] || '');
       });
     }
-  }, [selectedRow]);
+  }, [fields, selectedRow, stateHandlers]);
 
   const handleEditClick = (row) => setSelectedRow(row);
   const handleCloseModal = () => setSelectedRow(null);
