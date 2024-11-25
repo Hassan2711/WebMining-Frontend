@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 // export const BACKEND_URL =
 //   "http://127.0.0.1:8000";
 export const BACKEND_URL = "https://mining-production.up.railway.app";
+console.log('BACKEND_URL:', BACKEND_URL);
 
 
 export function Login() {
