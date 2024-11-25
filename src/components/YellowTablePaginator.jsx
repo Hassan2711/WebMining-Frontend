@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useReducer } from 'react';
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   Modal,
   Input,
 } from '@mui/material';
+import Image from 'next/image'; // Import optimized Image component
 
 const YellowTablePaginator = ({
   data,
@@ -24,38 +25,37 @@ const YellowTablePaginator = ({
   const [visibleRows, setVisibleRows] = useState([]);
   const [checkedByUser, setCheckedByUser] = useState('N/A');
 
-  // Memoize the fields array to prevent recreation on every render
-  const fields = useMemo(
-    () => [
-      'editName',
-      'phone',
-      'address',
-      'link',
-      'neighborhoods',
-      'claimed',
-      'categories',
-      'other_info',
-      'other_links',
-      'email',
-      'regular_hours',
-      'general_info',
-      'services_products',
-      'amenities',
-      'languages',
-      'aka',
-      'social_links',
-      'photos_url',
-    ],
-    []
-  );
+  // Define fields
+  const fields = useMemo(() => [
+    'editName',
+    'phone',
+    'address',
+    'link',
+    'neighborhoods',
+    'claimed',
+    'categories',
+    'other_info',
+    'other_links',
+    'email',
+    'regular_hours',
+    'general_info',
+    'services_products',
+    'amenities',
+    'languages',
+    'aka',
+    'social_links',
+    'photos_url',
+  ], []);
 
-  // Create state handlers for each field
-  const stateHandlers = useMemo(() => {
-    return fields.reduce((acc, field) => {
-      acc[field] = useState('');
-      return acc;
-    }, {});
-  }, [fields]);
+  // Use a single reducer to manage form state
+  const [formState, dispatch] = useReducer((state, action) => ({
+    ...state,
+    ...action,
+  }), fields.reduce((acc, field) => ({ ...acc, [field]: '' }), {}));
+
+  const handleInputChange = (field, value) => {
+    dispatch({ [field]: value });
+  };
 
   const fetchCheckedByData = useCallback(async () => {
     try {
@@ -85,40 +85,32 @@ const YellowTablePaginator = ({
 
   useEffect(() => {
     if (selectedRow) {
-      fields.forEach((field) => {
-        stateHandlers[field][1](selectedRow[field] || '');
-      });
+      dispatch(fields.reduce((acc, field) => ({
+        ...acc,
+        [field]: selectedRow[field] || '',
+      }), {}));
     }
-  }, [selectedRow, fields, stateHandlers]);
+  }, [selectedRow, fields]);
 
   const handleEditClick = useCallback((row) => setSelectedRow(row), []);
   const handleCloseModal = useCallback(() => setSelectedRow(null), []);
 
-  const handleApprove = useCallback(async () => {
+  const handleApprove = useCallback(() => {
     if (selectedRow) {
-      const updatedFields = fields.reduce(
-        (acc, field) => ({ ...acc, [field]: stateHandlers[field][0] }),
-        {}
-      );
-      console.log('Approve data:', updatedFields);
+      console.log('Approve data:', formState);
       setTimeout(() => window.location.reload(), 2000);
     }
-  }, [selectedRow, fields, stateHandlers]);
+  }, [selectedRow, formState]);
 
-  const handleReject = useCallback(async () => {
+  const handleReject = useCallback(() => {
     if (selectedRow) {
-      const updatedFields = fields.reduce(
-        (acc, field) => ({ ...acc, [field]: stateHandlers[field][0] }),
-        {}
-      );
-      console.log('Reject data:', updatedFields);
+      console.log('Reject data:', formState);
       setTimeout(() => window.location.reload(), 2000);
     }
-  }, [selectedRow, fields, stateHandlers]);
+  }, [selectedRow, formState]);
 
   const getStatusText = useCallback(
-    (status) =>
-      status === 'Approved' || status === 'Rejected' ? status : 'Pending',
+    (status) => (status === 'Approved' || status === 'Rejected' ? status : 'Pending'),
     []
   );
 
@@ -172,8 +164,8 @@ const YellowTablePaginator = ({
               <div key={field}>
                 <label>{field.replace('_', ' ')}</label>
                 <Input
-                  value={stateHandlers[field][0]}
-                  onChange={(e) => stateHandlers[field][1](e.target.value)}
+                  value={formState[field]}
+                  onChange={(e) => handleInputChange(field, e.target.value)}
                   placeholder={`Enter ${field}`}
                 />
               </div>
