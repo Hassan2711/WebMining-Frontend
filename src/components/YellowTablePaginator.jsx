@@ -95,6 +95,8 @@ const YellowTablePaginator = ({
           throw new Error('Failed to fetch checked by data');
         }
         const data = await response.json();
+        console.log(data);
+
         setCheckedByUser(data.yellowpages || 'N/A');
       } catch (error) {
         console.error('Error fetching checked by data:', error);
