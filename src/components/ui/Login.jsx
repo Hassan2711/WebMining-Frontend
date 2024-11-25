@@ -8,8 +8,10 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 // export const  BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-export const BACKEND_URL =
-  "http://127.0.0.1:8000";
+// export const BACKEND_URL =
+//   "http://127.0.0.1:8000";
+export const BACKEND_URL = "https://mining-production.up.railway.app";
+
 
 export function Login() {
   const router = useRouter();
